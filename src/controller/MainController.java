@@ -1,25 +1,36 @@
 package controller;
 
+import controller.util.AlertFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import pool.ConnectionPool;
+import pool.PoolException;
 
-public class MainController {
-    @FXML
-    private UsersTabController usersTabController;
-    @FXML
-    private OrdersTabController ordersTabController;
-    @FXML
-    private DriversTabController driversTabController;
-    @FXML
-    private VehiclesTabController vehiclesTabController;
+import java.sql.SQLException;
+
+public class MainController extends Controller {
 
     @FXML
     public void initialize() {
-        usersTabController.injectMainController(this);
-        System.out.println("Hello");
+        setAlertFactory(new AlertFactory());
     }
 
-    public void close(ActionEvent actionEvent) {
-        System.out.println("Close");
+    public void testConnection(ActionEvent actionEvent) {
+        String message = "Connection closed :(";
+        try {
+            if(!ConnectionPool.getInstance().getConnection().isClosed()) {
+                message = "Connection is OK :)";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (PoolException e) {
+            e.printStackTrace();
+        } finally {
+            getAlertFactory().getInfoAlert(message).showAndWait();
+        }
+    }
+
+    public void about(ActionEvent actionEvent) {
+        getAlertFactory().getAboutAlert().showAndWait();
     }
 }

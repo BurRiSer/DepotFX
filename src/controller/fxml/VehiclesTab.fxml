@@ -11,19 +11,19 @@
     <left>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="vehicleListButton" mnemonicParsing="false" prefHeight="57.0" prefWidth="136.0" text="List">
+                <Button fx:id="vehicleListButton" mnemonicParsing="false" onAction="#list" prefHeight="57.0" prefWidth="136.0" text="List">
                     <VBox.margin>
                         <Insets top="24.0" />
                     </VBox.margin></Button>
-                <Button fx:id="vehicleEditButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="136.0" text="Edit">
+                <Button fx:id="vehicleEditButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#edit" prefHeight="57.0" prefWidth="136.0" text="Edit">
                     <VBox.margin>
                         <Insets top="24.0" />
                     </VBox.margin></Button>
-                <Button fx:id="vehicleDeleteButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="136.0" text="Delete">
+                <Button fx:id="vehicleDeleteButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#delete" prefHeight="57.0" prefWidth="136.0" text="Delete">
                     <VBox.margin>
                         <Insets top="24.0" />
                     </VBox.margin></Button>
-                <Button fx:id="vehicleCreateButton" layoutX="10.0" layoutY="124.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="136.0" text="Create">
+                <Button fx:id="vehicleCreateButton" layoutX="10.0" layoutY="124.0" mnemonicParsing="false" onAction="#add" prefHeight="57.0" prefWidth="136.0" text="Create">
                     <VBox.margin>
                         <Insets top="24.0" />
                     </VBox.margin></Button>

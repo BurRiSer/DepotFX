@@ -71,4 +71,9 @@ public class VehicleServiceImpl extends BaseService implements VehicleService {
             throw new ServiceException(e);
         }
     }
+
+    @Override
+    public boolean canDelete(Long id) {
+        return false;
+    }
 }

@@ -1,5 +1,7 @@
 package controller;
 
+import controller.util.AlertFactory;
+import controller.util.DialogFactory;
 import domain.Role;
 import domain.User;
 import factory.FactoryException;
@@ -27,7 +29,6 @@ public class UsersTabController extends Controller {
 
     @FXML
     private TableView<User> usersTable;
-
     @FXML
     private TableColumn<User, Long> idColumn;
     @FXML
@@ -37,31 +38,17 @@ public class UsersTabController extends Controller {
     @FXML
     private TableColumn<User, Role> roleColumn;
 
-    @FXML
-    private Button userListButton;
-    @FXML
-    private Button userEditButton;
-    @FXML
-    private Button userDeleteButton;
-    @FXML
-    private Button userCreateButton;
-
     private ObservableList<User> users = FXCollections.observableArrayList();
-
-    private MainController mainController;
-
-    public void injectMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
 
     @FXML
     public void initialize() throws FactoryException, ServiceException {
-        idColumn.setCellValueFactory(new PropertyValueFactory<User, Long>("Id"));
+        //init table columns
+        idColumn.setCellValueFactory(new PropertyValueFactory<User, Long>("id"));
         loginColumn.setCellValueFactory(new PropertyValueFactory<User, String>("login"));
         passwordColumn.setCellValueFactory(new PropertyValueFactory<User, String>("password"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<User, Role>("role"));
-        System.out.println("Users Tab");
 
+        //init connection pool
         try {
             ConnectionPool.getInstance().init("com.mysql.jdbc.Driver",
                     "jdbc:mysql://localhost/mydb?useUnicode=true&characterEncoding=UTF-8",
@@ -70,21 +57,22 @@ public class UsersTabController extends Controller {
         } catch (PoolException e) {
             e.printStackTrace();
         }
-
-        ServiceFactory factory = new ServiceFactoryImpl();
-        setServiceFactory(factory);
-
+        //init user service
+        setServiceFactory(new ServiceFactoryImpl());
         userService = getServiceFactory().getUserService();
 
+        setDialogFactory(new DialogFactory());
+        setAlertFactory(new AlertFactory());
+
+        //init table list
         users.addAll(userService.findAll());
         usersTable.setItems(users);
     }
 
-    /*вывести список в tableview*/
+    /*вывести список в tableView*/
     public void list(ActionEvent actionEvent) {
         /*временное решение*/
         users.removeAll(users);
-
         try {
             users.addAll(userService.findAll());
         } catch (ServiceException e) {
@@ -96,7 +84,6 @@ public class UsersTabController extends Controller {
     public void edit(ActionEvent actionEvent) {
         User user = usersTable.getSelectionModel().getSelectedItem();
         if (user != null) {
-            System.out.println("Start edit " + user.getLogin());
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml/UserEditDialog.fxml"));
                 Parent parent = loader.load();
@@ -104,7 +91,8 @@ public class UsersTabController extends Controller {
                 UserEditDialogController dialogController = loader.getController();
                 dialogController.setUser(user);
 
-                dialogCreator(parent, "Edit User");
+                Dialog dialog = getDialogFactory().getDialog(parent, "Edit User");
+                dialog.showAndWait();
 
                 if (dialogController.isOkClicked()) {
                     userService.save(dialogController.getUser());
@@ -123,9 +111,7 @@ public class UsersTabController extends Controller {
         if (user != null) {
             try {
                 if (userService.canDelete(user.getId())) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Confirmation");
-                    alert.setHeaderText("Do you really want to delete '" + user.getLogin() + "'?");
+                    Alert alert = getAlertFactory().getConfirmationAlert(user.getLogin());
                     Optional<ButtonType> result = alert.showAndWait();
 
                     if (result.get() == ButtonType.OK) {
@@ -135,9 +121,7 @@ public class UsersTabController extends Controller {
                         System.out.println("Deleted!");
                     }
                 } else {
-                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                    errorAlert.setTitle("Error");
-                    errorAlert.setHeaderText("Sorry, can't delete '" + user.getLogin() + "'.");
+                    Alert errorAlert = getAlertFactory().getErrorAlert(user.getLogin());
                     errorAlert.showAndWait();
                 }
             } catch (ServiceException e) {
@@ -150,10 +134,10 @@ public class UsersTabController extends Controller {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml/UserEditDialog.fxml"));
             Parent parent = loader.load();
-
             UserEditDialogController dialogController = loader.getController();
 
-            dialogCreator(parent, "Add new User");
+            Dialog dialog = getDialogFactory().getDialog(parent, "Add new User");
+            dialog.showAndWait();
 
             if (dialogController.isOkClicked()) {
                 userService.save(dialogController.getUser());
@@ -166,16 +150,5 @@ public class UsersTabController extends Controller {
         } catch (ServiceException e) {
             e.printStackTrace();
         }
-    }
-
-    private void dialogCreator(Parent parent, String title) {
-        Dialog dialog = new Dialog();
-        dialog.getDialogPane().setContent(parent);
-        dialog.setTitle(title);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.managedProperty().bind(closeButton.visibleProperty());
-        closeButton.setVisible(false);
-        dialog.showAndWait();
     }
 }

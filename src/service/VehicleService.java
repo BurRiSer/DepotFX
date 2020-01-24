@@ -15,4 +15,6 @@ public interface VehicleService {
     void save(Vehicle vehicle) throws ServiceException;
 
     void delete(Long id) throws ServiceException;
+
+    boolean canDelete(Long id);
 }

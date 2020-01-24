@@ -32,11 +32,7 @@ public class UserEditDialogController {
         errorLabel.setText("");
         roles.addAll(Role.USER, Role.DRIVER, Role.DISPATCHER, Role.ADMINISTRATOR);
         roleChoiceBox.setItems(roles);
-        if(user != null) {
-            roleChoiceBox.setValue(user.getRole());
-        } else {
-            roleChoiceBox.setValue(roles.get(0));
-        }
+        roleChoiceBox.setValue(roles.get(0));
     }
 
     public void save(ActionEvent actionEvent) {
@@ -76,9 +72,9 @@ public class UserEditDialogController {
 
     public void setUser(User editedUser) {
         user = editedUser;
-        System.out.println(user + " " + user.getId());
         loginTextField.setText(user.getLogin());
         passwordTextField.setText(user.getPassword());
+        roleChoiceBox.setValue(user.getRole());
     }
 
     public User getUser() {

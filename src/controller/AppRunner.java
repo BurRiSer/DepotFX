@@ -11,8 +11,8 @@ public class AppRunner extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("fxml/Main.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 640, 480));
+        primaryStage.setTitle("DepotFX");
+        primaryStage.setScene(new Scene(root, 720, 480));
         primaryStage.show();
     }
 
